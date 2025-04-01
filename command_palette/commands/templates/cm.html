@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Command Palette</title>
+
+</head>
+<body style="background-color:lightblue;">
+
+
+
+
+
+
+
+
+
+{% include 'admin/command_palette.html' %}
+
+
+
+
+
+
+
+
+
+{% comment %}
+
+
+
+
+{% load static i18n shortcuts %}
+
+      {% all_apps as apps %}
+      {% for app_label, models in apps.items %}
+        <section>
+          <h3>{{ app_label }}</h3>
+          <ul>
+          {% for model in models %}
+            <li>
+              <a href="{{ model.url }}"{{ model.name }}>
+                {{ model.name }}
+              </a>
+            </li>
+          {% endfor %}
+          </ul>
+        </section>
+      {% endfor %}
+
+
+
+
+
+
+
+
+
+
+<button onclick="showCommandPalette()">Open Command Palette (Ctrl+K)</button>
+
+
+    <div class="backdrop" id="backdrop"></div>
+
+    <div class="command-palette" id="commandPalette">
+
+    	<form id="commandPalette_form" action="" method="get" accept-charset="utf-8">
+
+        <input 
+
+        type="search" 
+        class="command-input" 
+        placeholder="Search commands..." 
+        id="commandInput">
+
+    	</form>
+
+
+        <div class="command-list" id="commandList"></div>
+    </div>
+
+
+http://127.0.0.1:8000/admin/commands/post/?q=hi
+
+
+    <script>
+
+
+	document.addEventListener('keydown', (e) => {
+
+
+
+// executeCommand(item)
+
+
+		console.log(e.keyCode,e.target);
+
+	    if (e.keyCode == 13 && e.target == document.getElementById('commandInput')) {
+	    	if(document.getElementById('commandInput').value.length<1){
+
+	    	}
+	    	else {
+				// alert('hi');
+				var query_string_list = document.getElementById('commandInput').value.split('|');
+				window.location.href = window.current_base_url + query_string_list[query_string_list.length-1];
+				// hideCommandPalette();
+	    		
+	    	}
+
+
+	    }
+
+	});
+
+
+
+
+
+
+
+
+        // Sample commands data
+        const commands = [
+
+// SEARCH
+			{% for app_label, models in apps.items %}
+
+
+            {
+                group: '{{ app_label }}',
+                items: [
+                	{% for model in models %}
+
+                    { name: '?{{ model.name }}    (search)    ?|{{ model.name }}|', action: (e) => {
+
+                    	// e.preventDefault();
+                    	var x='?|{{ model.name }}|';
+                    	document.getElementById('commandInput').value=x+'';
+                    	document.getElementById('commandInput').focus();
+                    	var url = '{{ model.url }}';
+
+
+                    	window.current_base_url = url + '?q=';
+                    	
+
+
+                    }, shortcut: 'G D' },
+
+                    {% endfor %}
+
+                ]
+            },
+
+            {% endfor %}
+// UPDATE
+			{% for app_label, models in apps.items %}
+
+
+            {
+                group: '{{ app_label }}',
+                items: [
+                	{% for model in models %}
+
+                    { name: '>{{ model.name }}    (update)', action: (e) => {
+
+                    	// e.preventDefault();
+                    	var x='>|{{ model.name }}|';
+                    	document.getElementById('commandInput').value=x+'';
+                    	document.getElementById('commandInput').focus();
+                    	var url = '{{ model.url }}';
+
+
+                    	window.current_base_url = url + '?q=';
+
+
+                    }, shortcut: 'G D' },
+
+                    {% endfor %}
+
+                ]
+            },
+
+            {% endfor %}
+
+// DELETE
+// http://127.0.0.1:8000/admin/commands/post/
+// http://127.0.0.1:8000/admin/commands/post/
+			{% for app_label, models in apps.items %}
+
+
+            {
+                group: '{{ app_label }}',
+                items: [
+                	{% for model in models %}
+
+                    { name: '-{{ model.name }}    (delete)', action: (e) => {
+
+                    	// e.preventDefault();
+                    	var x='-{{ model.name }}|';
+                    	document.getElementById('commandInput').value=x+'';
+                    	document.getElementById('commandInput').focus();
+                    	var url = '{{ model.url }}';
+
+
+                    	window.current_base_url = url + '?q=';
+
+
+                    }, shortcut: 'G D' },
+
+                    {% endfor %}
+
+                ]
+            },
+
+            {% endfor %}
+
+// ADD
+
+			{% for app_label, models in apps.items %}
+
+
+            {
+                group: '{{ app_label }}',
+                items: [
+                	{% for model in models %}
+
+                    { name: '+{{ model.name }}    (delete)', action: (e) => {
+
+                    	// e.preventDefault();
+                    	var x='+{{ model.name }}|';
+                    	document.getElementById('commandInput').value=x+'';
+                    	document.getElementById('commandInput').focus();
+                    	var url = '{{ model.url }}';
+
+
+                    	window.current_base_url = url + '?q=';
+
+
+                    }, shortcut: 'G D' },
+
+                    {% endfor %}
+
+                ]
+            },
+
+            {% endfor %}
+
+// Navigation
+
+			{% for app_label, models in apps.items %}
+
+
+            {
+                group: '{{ app_label }}',
+                items: [
+                	{% for model in models %}
+
+                    { name: '{{ model.name }}', action: '{{ model.url }}', shortcut: 'G D' },
+
+                    {% endfor %}
+
+                ]
+            },
+
+            {% endfor %}
+
+
+
+
+
+            {
+                group: 'Navigation',
+                items: [
+                    { name: 'Dashboard', action: '/dashboard', shortcut: 'G D' },
+                    { name: 'Settings', action: '/settings', shortcut: 'G S' },
+                    { name: 'User Profile', action: '/profile', shortcut: 'G U' },
+                    { name: 'LogOut', action: '/admin/logout', shortcut: 'Ctrl+L' }
+                ]
+            },
+            {
+                group: 'Actions',
+                items: [
+                    { name: 'New Document', action: () => alert('Creating new document...'), shortcut: 'C' },
+                    { name: 'Search', action: () => document.getElementById('commandInput').focus(), shortcut: '/' },
+                    { name: 'Refresh', action: () => location.reload(), shortcut: 'F5' },
+
+
+                    
+                ]
+            }
+        ];
+
+        // Command palette state
+        let selectedIndex = 0;
+        const maxVisibleItems = 5;
+
+        // Elements
+        const palette = document.getElementById('commandPalette');
+        const backdrop = document.getElementById('backdrop');
+        const input = document.getElementById('commandInput');
+        const list = document.getElementById('commandList');
+
+        // Show command palette
+        function showCommandPalette() {
+            palette.classList.add('active');
+            backdrop.classList.add('active');
+            input.focus();
+            filterCommands('');
+        }
+
+        // Hide command palette
+        function hideCommandPalette() {
+            palette.classList.remove('active');
+            backdrop.classList.remove('active');
+            selectedIndex = 0;
+        }
+
+        // Filter commands based on search input
+        function filterCommands(query) {
+            list.innerHTML = '';
+            selectedIndex = 0;
+
+            commands.forEach(group => {
+                const filteredItems = group.items.filter(item =>
+                    item.name.toLowerCase().includes(query.toLowerCase())
+                );
+
+                if (filteredItems.length > 0) {
+                    const groupElement = document.createElement('div');
+                    groupElement.className = 'command-group';
+                    
+                    const header = document.createElement('div');
+                    header.className = 'command-group-header';
+                    header.textContent = group.group;
+                    groupElement.appendChild(header);
+
+                    filteredItems.forEach((item, index) => {
+                        const itemElement = document.createElement('div');
+                        itemElement.className = 'command-item';
+                        if (index === selectedIndex) {
+                            itemElement.classList.add('active');
+                        }
+
+                        itemElement.innerHTML = `
+                            <span>${item.name}</span>
+                            ${item.shortcut ? `<span class="command-shortcut">${item.shortcut}</span>` : ''}
+                        `;
+
+                        itemElement.addEventListener('click', () => executeCommand(item));
+                        groupElement.appendChild(itemElement);
+                    });
+
+                    list.appendChild(groupElement);
+                }
+            });
+        }
+
+        // Execute command action
+        function executeCommand(command) {
+            if (typeof command.action === 'function') {
+                command.action();
+            } else {
+                window.location.href = command.action;
+                hideCommandPalette();
+            }
+            // hideCommandPalette();
+        }
+
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+
+            // Open/close palette
+            if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+                e.preventDefault();
+                showCommandPalette();
+            }
+            if (e.key === 'Escape') {
+                hideCommandPalette();
+            }
+
+
+            // Navigation
+            if (palette.classList.contains('active')) {
+                const items = Array.from(list.querySelectorAll('.command-item'));
+                
+                switch(e.key) {
+                    case 'ArrowUp':
+                        e.preventDefault();
+                        selectedIndex = Math.max(0, selectedIndex - 1);
+                        document.getElementById('commandInput').blur();
+                        items[selectedIndex].focus();
+                        break;
+                    case 'ArrowDown':
+                        e.preventDefault();
+                        selectedIndex = Math.min(items.length - 1, selectedIndex + 1);
+                        document.getElementById('commandInput').blur();
+                        items[selectedIndex].focus();
+                        break;
+                    case 'Enter':
+                        e.preventDefault();
+                        if (items[selectedIndex]) {
+                            items[selectedIndex].click();
+                            document.getElementById('commandInput').focus();
+                        }
+                        break;
+                }
+
+                items.forEach((item, index) => {
+                    item.classList.toggle('active', index === selectedIndex);
+
+                });
+            }
+        });
+
+        // Search input handler
+        input.addEventListener('input', (e) => {
+            filterCommands(e.target.value);
+        });
+
+        // Close when clicking backdrop
+        backdrop.addEventListener('click', hideCommandPalette);
+    </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <style>
+        /* Base styles */
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            padding: 2rem;
+        }
+
+        /* Command palette styles */
+        .command-palette {
+            display: none;
+            position: fixed;
+            top: 20%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 600px;
+            max-width: 90%;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 12px 28px rgba(0,0,0,0.15);
+            z-index: 1000;
+        }
+
+        .command-palette.active {
+            display: block;
+
+
+
+
+
+/* m */
+            overflow-y: scroll;
+		    height: -webkit-fill-available;
+
+        }
+
+        .command-input {
+            width: 100%;
+            padding: 1.5rem;
+            border: none;
+            border-radius: 8px 8px 0 0;
+            font-size: 1rem;
+            border-bottom: 1px solid #eee;
+        }
+
+        .command-input:focus {
+            outline: none;
+        }
+
+        .command-list {
+            max-height: 400px;
+            overflow-y: auto;
+            padding: 0.5rem 0;
+        }
+
+        .command-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem 1.5rem;
+            cursor: pointer;
+            transition: background 0.2s ease;
+        }
+
+        .command-item:hover,
+        .command-item.active {
+/*             background: #f5f5f5; */
+
+				background: lightgrey;
+        }
+
+        .command-shortcut {
+            color: #666;
+            font-size: 0.85em;
+            background: #eee;
+            padding: 0.25em 0.5em;
+            border-radius: 4px;
+        }
+
+        .command-group {
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .command-group-header {
+            padding: 0.5rem 1.5rem;
+            font-size: 0.85em;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* Backdrop */
+        .backdrop {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.2);
+            z-index: 999;
+        }
+
+        .backdrop.active {
+            display: block;
+
+
+
+
+        }
+    </style>
+
+
+
+{% endcomment %}
+
+
+
+
+</body>
+</html>
+
+
+
+
+{% comment %}
+<!DOCTYPE html>
+<html style="background-color:lightblue;height:auto;min-height: 100%;" class="vl">
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<title>command_palette Home</title>
+	<!-- <link rel="stylesheet" href=""> -->
+</head>
+<body>
+
+
+
+
+	
+</body>
+</html>
+
+
+{% endcomment %}
+
+

@@ -1,0 +1,738 @@
+
+
+{% load static i18n shortcuts %}
+{% all_apps as apps %}
+
+
+
+{% comment %}
+
+Django version 3.0.8
+
+
+
+
+
+
+
+
+{% endcomment %}
+
+
+
+
+
+
+{% comment %}
+
+      
+      {% for app_label, models in apps.items %}
+        <section>
+          <h3>{{ app_label }}</h3>
+          <ul>
+          {% for model in models %}
+            <li>
+              <a href="{{ model.url }}"{{ model.name }}>
+                {{ model.name }}
+              </a>
+            </li>
+          {% endfor %}
+          </ul>
+        </section>
+      {% endfor %}
+
+
+{% endcomment %}
+
+
+
+
+{% comment %}
+<button onclick="showCommandPalette()">Open Command Palette (Ctrl+K) </button>
+
+{% endcomment %}
+
+
+
+<button onclick="showCommandPalette()">#(Ctrl+K)</button>
+
+
+    <div class="backdrop" id="backdrop"></div>
+
+    <div class="command-palette" id="commandPalette">
+
+        <form id="commandPalette_form" action="" method="get" accept-charset="utf-8">
+
+        <input 
+
+        type="search" 
+        class="command-input" 
+        placeholder="Search commands..." 
+        id="commandInput">
+
+        </form>
+
+
+        <div class="command-list" id="commandList"></div>
+    </div>
+
+
+{% comment %}
+http://127.0.0.1:8000/admin/commands/post/?q=hi
+
+{% endcomment %}
+
+
+
+
+
+
+    <script type="text/javascript">
+
+
+    document.addEventListener('keydown', (e) => {
+
+
+
+// executeCommand(item)
+
+
+        // console.log(e.keyCode,e.key,e.target);
+
+
+// Enter press
+        if(e.keyCode == 13 && e.target == document.getElementById('commandInput')) {
+            if(document.getElementById('commandInput').value.length<1){
+
+            }
+            else{
+                var query_string_list = document.getElementById('commandInput').value.split('|');
+
+// Nth page
+// http://127.0.0.1:8000/admin/commands/post/?p=2&q=dog
+// window.current_base_url = url + '?p=';
+                if(query_string_list[query_string_list.length-2]=='X') {
+
+                    // alert(Number(query_string_list[query_string_list.length-1])-1);
+                    var q=window.location.href.split('?')[1].split('&')[1];
+
+                    window.location.href = window.current_base_url + `${Number(query_string_list[query_string_list.length-1])-1}`+`&${q}`;
+
+                }
+
+                else if(query_string_list[0]=='>'){
+                    window.location.href = window.current_base_url + query_string_list[query_string_list.length-1] + '/change/';
+                }
+                else if(query_string_list[0]=='-'){
+                    window.location.href = window.current_base_url + query_string_list[query_string_list.length-1] + '/delete/';
+                }
+
+
+                else{
+                // alert('hi');
+                
+                window.location.href = window.current_base_url + query_string_list[query_string_list.length-1];
+                // hideCommandPalette();                    
+                }
+
+                
+            }
+
+
+        }
+
+    });
+
+
+
+
+
+
+
+
+        // Sample commands data
+        const commands = [
+
+// SEARCH
+            {% for app_label, models in apps.items %}
+
+
+            {
+                group: 'app : {{ app_label }}',
+                items: [
+                    {% for model in models %}
+
+                    { name: '?{{ model.name }}    /(search)    ?|{{ model.name }}|text', action: (e) => {
+
+                        // e.preventDefault();
+                        var x='?|{{ model.name }}|';
+                        document.getElementById('commandInput').value=x+'';
+                        document.getElementById('commandInput').focus();
+                        var url = '{{ model.url }}';
+
+
+                        window.current_base_url = url + '?q=';
+                        
+
+
+                    }, shortcut: '' },
+
+                    {% endfor %}
+
+                ]
+            },
+
+            {% endfor %}
+// UPDATE
+// http://127.0.0.1:8000/admin/commands/profile/1/change/
+
+            {% for app_label, models in apps.items %}
+
+
+            {
+                group: 'app : {{ app_label }}',
+                items: [
+                    {% for model in models %}
+
+                    { name: '>{{ model.name }}    .(update)    >|{{ model.name }}|id', action:(e) => {
+
+                        // e.preventDefault();
+                        var x='>|{{ model.name }}|';
+                        document.getElementById('commandInput').value=x+'';
+                        document.getElementById('commandInput').focus();
+                        var url = '{{ model.url }}';
+
+
+                        window.current_base_url = url;
+
+
+                    }
+
+                    , shortcut: '' },
+
+                    {% endfor %}
+
+                ]
+            },
+
+            {% endfor %}
+
+// DELETE
+// http://127.0.0.1:8000/admin/commands/post/
+// http://127.0.0.1:8000/admin/commands/post/
+// http://127.0.0.1:8000/admin/commands/post/2/delete/            
+            {% for app_label, models in apps.items %}
+
+
+            {
+                group: 'app : {{ app_label }}',
+                items: [
+                    {% for model in models %}
+
+                    { name: '-{{ model.name }}    _(delete)    -|{{ model.name }}|id', action: (e) => {
+
+                        // e.preventDefault();
+                        var x='-|{{ model.name }}|';
+                        document.getElementById('commandInput').value=x+'';
+                        document.getElementById('commandInput').focus();
+                        var url = '{{ model.url }}';
+
+
+                        window.current_base_url = url;
+
+
+                    }, shortcut: '' },
+
+                    {% endfor %}
+
+                ]
+            },
+
+            {% endfor %}
+
+// ADD
+
+            {% for app_label, models in apps.items %}
+
+
+            {
+                group: 'app : {{ app_label }}',
+                items: [
+                    {% for model in models %}
+
+                    { name: '+{{ model.name }}    =(Add Form Navigate)', action:'{{ model.url }}add/'
+
+                     // (e) => {
+
+
+
+                        // e.preventDefault();
+                        // var x='+|{{ model.name }}|';
+                        // document.getElementById('commandInput').value=x+'';
+                        // document.getElementById('commandInput').focus();
+                        // var url = '{{ model.url }}';
+
+
+                        // window.current_base_url = url + '?q=';
+
+
+                    // }
+                    , shortcut: '' },
+
+                    {% endfor %}
+
+                ]
+            },
+
+            {% endfor %}
+
+// Model Navigation
+
+            {% for app_label, models in apps.items %}
+
+
+            {
+                group: 'app : {{ app_label }}',
+                items: [
+                    {% for model in models %}
+
+                    { name: '{{ model.name }}    (Model Navigate)', action: '{{ model.url }}', shortcut: '' },
+
+                    {% endfor %}
+
+                ]
+            },
+
+            {% endfor %}
+
+
+
+ // (e) => {window.location.href = document.querySelector('span.this-page + a').href.split('?')[1]+document.querySelector('span.this-page + a').href.split('?')[1]-2;}
+
+
+
+            {
+                group: 'Navigation',
+                items: [
+                    { name: 'Home(index)', action: '/admin', shortcut: 'Ctrl+I' },
+
+// http://127.0.0.1:8000/admin/commands/post/
+// http://127.0.0.1:8000/admin/commands/post/?p=1
+// http://127.0.0.1:8000/admin/commands/post/?p=2&q=dog
+
+                    { name: 'Nth page    X|    X|page id', action: (e) => {
+                        showCommandPalette();
+                        var x='X|';
+                        document.getElementById('commandInput').value=x+'';
+                        document.getElementById('commandInput').focus();
+
+                        var url = document.querySelector('p.paginator a').href.split('?')[0];
+
+                        // alert(url);
+                        window.current_base_url = url + '?p=';
+
+                        // alert(window.current_base_url);
+                    }
+                    , shortcut: 'Ctrl+X' },
+
+                    { name: 'Next page', action: (e) => {
+                        if (document.querySelector('p.paginator a.showall') != document.querySelector('span.this-page').nextElementSibling) {document.querySelector('span.this-page').nextElementSibling.click();}
+                        else{
+                            alert('No next page.')
+                        }
+                        
+
+                    }, shortcut: 'Ctrl+B' },
+                    { name: 'Previous page', action: (e) => {
+
+                        if (document.querySelector('span.this-page').previousElementSibling) {document.querySelector('span.this-page').previousElementSibling.click();}
+                        else{
+                            alert('No previous page.')
+                        }
+                        
+
+                    }, shortcut: 'Ctrl+V' },
+
+                    { name: 'LogOut', action: '/admin/logout', shortcut: 'Ctrl+L' },
+                    { name: 'View site (/)', action: '/', shortcut: 'Ctrl+Z' },
+
+                    
+                ]
+            },
+            {
+                group: 'Actions',
+                items: [
+
+
+                    { name: 'Add new object', action: (e) => {
+
+                        if(document.querySelector('.object-tools a.addlink')){
+                            document.querySelector('.object-tools a.addlink').click();
+                        }
+                    }, shortcut: 'Alt+A' },
+
+                    { name: 'Save & Add', action: (e) => {
+
+                        if(document.querySelector('div.submit-row input[name=_addanother]')){
+                            document.querySelector('div.submit-row input[name=_addanother]').click();
+                        }
+                    }, shortcut: 'Alt+A' },
+
+                    { name: 'Save & Editing', action: (e) => {document.querySelector('div.submit-row input[name=_continue]').click();}, shortcut: 'Alt+E' },
+
+                    { name: 'Save', action: (e) => {document.querySelector('div.submit-row input[name=_save]').click();}, shortcut: 'Alt+S' },
+
+
+                    { name: 'Delete this object or Delete selected objects', action: (e) => {
+                        // alert(document.querySelector('div.actions select').value);
+                        if(document.querySelector('div.submit-row a.deletelink')){
+                            document.querySelector('div.submit-row a.deletelink').click();
+                        }
+                        else if(document.querySelectorAll('div.results #result_list .selected').length>0){
+                            // alert(document.querySelector('div.actions select').value);
+                            document.querySelector('div.actions select').value='delete_selected';
+                            document.querySelector('form#changelist-form div.actions button.button').click();
+                        }
+                    }, shortcut: 'Alt+D' },
+
+                    { name: ' Delete confirmation / Yes', action: (e) => {document.querySelector('form div input[type=submit]').click();}, shortcut: 'Alt+Y' },
+
+                    { name: 'Delete cancel / No', action: (e) => {document.querySelector('form div a.button.cancel-link').click();}, shortcut: 'Alt+N' },
+                    
+
+
+
+                    { name: 'Search focus', action: (e) => {document.querySelector('#toolbar #changelist-search #searchbar').focus();hideCommandPalette();}, shortcut: 'Ctrl+/' },
+// /
+
+                    // { name: 'Search locate', action: '/admin', shortcut: 'Ctrl+Alt+S' },
+                    { name: 'Search    ?|', action:  (e) => {showCommandPalette();document.getElementById('commandInput').value='?|';document.getElementById('commandInput').focus();}, shortcut: 'Ctrl+S' },
+// Ctrl+Alt+S
+
+
+
+
+
+                    // { name: 'New Document', action: () => alert('Creating new document...'), shortcut: 'C' },
+                    // { name: 'Search', action: () => document.getElementById('commandInput').focus(), shortcut: '/' },
+                    { name: 'Refresh', action: () => location.reload(), shortcut: 'F5' },
+
+
+                    
+                ]
+            }
+        ];
+
+        // Command palette state
+        let selectedIndex = 0;
+        const maxVisibleItems = 5;
+
+        // Elements
+        const palette = document.getElementById('commandPalette');
+        const backdrop = document.getElementById('backdrop');
+        const input = document.getElementById('commandInput');
+        const list = document.getElementById('commandList');
+
+        // Show command palette
+        function showCommandPalette() {
+            palette.classList.add('active');
+            backdrop.classList.add('active');
+            input.focus();
+            filterCommands('');
+        }
+
+        // Hide command palette
+        function hideCommandPalette() {
+            palette.classList.remove('active');
+            backdrop.classList.remove('active');
+            selectedIndex = 0;
+        }
+
+        // Filter commands based on search input
+        function filterCommands(query) {
+            list.innerHTML = '';
+            selectedIndex = 0;
+
+            commands.forEach(group => {
+                const filteredItems = group.items.filter(item =>
+                    item.name.toLowerCase().includes(query.toLowerCase())
+                );
+
+                if (filteredItems.length > 0) {
+                    const groupElement = document.createElement('div');
+                    groupElement.className = 'command-group';
+                    
+                    const header = document.createElement('div');
+                    header.className = 'command-group-header';
+                    header.textContent = group.group;
+                    groupElement.appendChild(header);
+
+                    filteredItems.forEach((item, index) => {
+                        const itemElement = document.createElement('div');
+                        itemElement.className = 'command-item';
+                        if (index === selectedIndex) {
+                            itemElement.classList.add('active');
+                        }
+
+                        itemElement.innerHTML = `
+                            <span>${item.name}</span>
+                            ${item.shortcut ? `<span class="command-shortcut">${item.shortcut}</span>` : ''}
+                        `;
+
+                        itemElement.addEventListener('click', () => executeCommand(item));
+                        groupElement.appendChild(itemElement);
+                    });
+
+                    list.appendChild(groupElement);
+                }
+            });
+        }
+
+        // Execute command action
+        function executeCommand(command) {
+            if (typeof command.action === 'function') {
+                // command.action();
+                try{command.action()}
+                finally{filterCommands(document.getElementById('commandInput').value)};
+// line
+                // filterCommands(document.getElementById('commandInput').value);
+
+
+
+            } else {
+                window.location.href = command.action;
+                hideCommandPalette();
+            }
+            // hideCommandPalette();
+        }
+
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+
+            // Open/close palette
+            if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+                e.preventDefault();
+                showCommandPalette();
+            }
+            if (e.key === 'Escape') {
+                hideCommandPalette();
+            }
+
+
+            // Navigation
+            if (palette.classList.contains('active')) {
+                const items = Array.from(list.querySelectorAll('.command-item'));
+                
+                switch(e.key) {
+                    case 'ArrowUp':
+                        e.preventDefault();
+                        selectedIndex = Math.max(0, selectedIndex - 1);
+                        document.getElementById('commandInput').blur();
+                        items[selectedIndex].focus();
+                        break;
+                    case 'ArrowDown':
+                        e.preventDefault();
+                        selectedIndex = Math.min(items.length - 1, selectedIndex + 1);
+                        document.getElementById('commandInput').blur();
+                        items[selectedIndex].focus();
+                        break;
+                    case 'Enter':
+                        e.preventDefault();
+                        if (items[selectedIndex]) {
+                            items[selectedIndex].click();
+                            document.getElementById('commandInput').focus();
+                        }
+                        break;
+                }
+
+                items.forEach((item, index) => {
+                    item.classList.toggle('active', index === selectedIndex);
+
+                });
+            }
+        });
+
+        // Search input handler
+        input.addEventListener('input', (e) => {
+            filterCommands(e.target.value);
+        });
+
+        // Close when clicking backdrop
+        backdrop.addEventListener('click', hideCommandPalette);
+    </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <style>
+        /* Base styles */
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+/*             padding: 2rem; */
+        }
+
+        /* Command palette styles */
+        .command-palette {
+            display: none;
+            position: fixed;
+            top: 20%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 600px;
+            max-width: 90%;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 12px 28px rgba(0,0,0,0.15);
+            z-index: 1020;
+
+            color: black;
+            font-weight: bold;
+            text-align: left;
+
+
+        }
+
+        .command-palette.active {
+            display: block;
+
+
+
+
+
+/* m */
+            overflow-y: scroll;
+            height: -webkit-fill-available;
+
+        }
+
+        .command-input {
+            width: 100%;
+            padding: 1.5rem;
+            border: none;
+            border-radius: 8px 8px 0 0;
+            font-size: 1rem;
+            border-bottom: 1px solid #eee;
+        }
+
+        .command-input:focus {
+            outline: none;
+        }
+
+        .command-list {
+            max-height: 400px;
+            overflow-y: auto;
+            padding: 0.5rem 0;
+        }
+
+        .command-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem 1.5rem;
+            cursor: pointer;
+            transition: background 0.2s ease;
+        }
+
+        .command-item:hover,
+        .command-item.active {
+/*             background: #f5f5f5; */
+
+                background: lightgrey;
+        }
+
+        .command-shortcut {
+            color: #666;
+            font-size: 0.85em;
+            background: #eee;
+            padding: 0.25em 0.5em;
+            border-radius: 4px;
+        }
+
+        .command-group {
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .command-group-header {
+            padding: 0.5rem 1.5rem;
+            font-size: 0.85em;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* Backdrop */
+        .backdrop {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.2);
+            z-index: 1005;
+        }
+
+        .backdrop.active {
+            display: block;
+
+
+
+
+        }
+    </style>
+
+
+
+
+
+
+
+
+
+
+
+{% include 'combo_register.html' %}
+
+
+
+
+
+
+
