@@ -113,10 +113,54 @@ http://127.0.0.1:8000/admin/commands/post/?q=hi
 // window.current_base_url = url + '?p=';
                 if(query_string_list[query_string_list.length-2]=='X') {
 
-                    // alert(Number(query_string_list[query_string_list.length-1])-1);
-                    var q=window.location.href.split('?')[1].split('&')[1];
+                    try{
+                        var query1=window.location.href.split('?')[1];
+                        var query2=query1.split('q=')[1];
+                    }
+                    finally{
+                        window.location.href = window.current_base_url + 
+                        `${Number(query_string_list[query_string_list.length-1])-1}`+
+                        `&q=${function(){if(query2!==undefined){return query2}else{return ""}}()}`;
 
-                    window.location.href = window.current_base_url + `${Number(query_string_list[query_string_list.length-1])-1}`+`&${q}`;
+                    }
+
+
+
+                    // `&q=${function(){if(query2!==undefined){alert('1-----'+query2);return query2}else{alert('2-----'+query2);return ""}}()}`;
+
+
+
+                    // alert(Number(query_string_list[query_string_list.length-1])-1);
+
+// post/?p=4
+// post/?q=ok
+
+
+                    // var query1=window.location.href.split('?')[1];
+                    // if(query1!==undefined){
+                    //     alert(query1);
+                    //     var query2=query1.split('&')[1];
+                    //     if(query2!==undefined){
+// post/?p=4&q=ok
+                    //         alert(query2);
+                    //         window.location.href = window.current_base_url + `${Number(query_string_list[query_string_list.length-1])-1}`+`&${query2}`; 
+                    //     }
+                    //     else{
+                    //         window.location.href = window.current_base_url + `${Number(query_string_list[query_string_list.length-1])-1}`+`&${query2}`;
+                    //     }
+
+                        
+                        
+
+                    // }
+// commands/post/
+                    // else{
+                    //     alert('No-query');
+                    //     // var query2=query1.split('&')[1];
+                    //     // alert(query2);
+                    //     window.location.href = window.current_base_url + `${Number(query_string_list[query_string_list.length-1])-1}`;
+                    // }
+
 
                 }
 
