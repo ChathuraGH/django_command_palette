@@ -1,7 +1,11 @@
 # django_command_palette
 Command palette to the Django Admin Interface
 
+![Screenshot of a comment on a GitHub issue showing an image, added in the Markdown, of an Octocat smiling and raising a tentacle.](https://myoctocat.com/assets/images/base-octocat.svg)
 
+
+
+![Command palette to the Django Admin Interface.](https://github.com/ChathuraGH/django_command_palette/blob/c6693ec3d9197309259764744c779e5de4f41fab/feature_previews/command_palette-2.png)
 
 
 # django_command_palette
