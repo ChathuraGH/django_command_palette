@@ -5,7 +5,10 @@ Command palette to the Django Admin Interface
 
 
 
-![Command palette to the Django Admin Interface.](https://github.com/ChathuraGH/django_command_palette/blob/c6693ec3d9197309259764744c779e5de4f41fab/feature_previews/command_palette-2.png)
+
+![Command palette to the Django Admin Interface.](https://github.com/ChathuraGH/django_command_palette/blob/e3da3b468d715f6ac2314c72191de934f708713e/feature_previews/command_palette-4.png)
+
+
 
 
 # django_command_palette
