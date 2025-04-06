@@ -9,7 +9,15 @@ Command palette to the Django Admin Interface
 
 ![c](https://github.com/ChathuraGH/django_command_palette/blob/f701b9b43c882587fdb2ae52e796e38399cd7596/feature_previews/685unxpkksrvfugu-360.png)
 
-[//]: # (https://github.com/ChathuraGH/django_command_palette/blob/f701b9b43c882587fdb2ae52e796e38399cd7596/feature_previews/unnamed.png)
+
+<!---
+![a](https://github.com/ChathuraGH/django_command_palette/blob/f701b9b43c882587fdb2ae52e796e38399cd7596/feature_previews/logo.svg)
+![b](https://github.com/ChathuraGH/django_command_palette/blob/f701b9b43c882587fdb2ae52e796e38399cd7596/feature_previews/unnamed.png)
+![c](https://github.com/ChathuraGH/django_command_palette/blob/f701b9b43c882587fdb2ae52e796e38399cd7596/feature_previews/685unxpkksrvfugu-360.png)
+
+-->
+
+
 
 
 
