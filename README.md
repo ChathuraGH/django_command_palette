@@ -42,7 +42,7 @@ Command palette to the Django Admin Interface
 - Availability : Command trigger location("specific page" or "global") 
 
 
-#### Modal manage
+#### Palette manage
 | Shortcut Function                | Key Combo                        |   Complexity-Availability            |   Execution method    |
 |----------------------------------|----------------------------------|--------------------------------------|-----------------------|
 | Open the command palette modal   | `Ctrl+K`                         |   Normal-Global                      |   On Combo            |
